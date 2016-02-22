@@ -111,7 +111,7 @@ if rchoice == 'y' or rchoice == 'Y':
         print "FILE RENAMED"
         print "THANKS FOR USING THIS SCRIPT"
         sys.exit()
-elif rhoice == 'n' or rchoice == 'N':
+elif rchoice == 'n' or rchoice == 'N':
         print "THANKS FOR USING THIS SCRIPT"
         print "EXITING"
         sys.exit()
