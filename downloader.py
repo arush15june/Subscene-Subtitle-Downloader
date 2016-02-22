@@ -22,7 +22,7 @@ site = "http://subscene.com"
 query = "http://subscene.com/subtitles/release?q="
 name = raw_input("Search (Be Specific) : ")
 cname = name.replace(" ","%20")
-query += cname
+query += cname + "&r=true"
 
 if(name == '-c'):
         credits()
