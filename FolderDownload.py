@@ -49,7 +49,6 @@ def rename(srtname,location,name):
         #        sys.exit()
 
 def findSub(query,location,name):
-        print query
         req = requests.get(query)
         source = BeautifulSoup(req.text,"html.parser")
 
