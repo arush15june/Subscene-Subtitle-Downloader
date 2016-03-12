@@ -2,11 +2,18 @@ import os,sys,zipfile
 import requests
 from bs4 import BeautifulSoup
 
-def extzip(fname,location):
+
+def remzip(fname):
+        print "REMOVING ZIP"
+        os.remove(fname)
+        print "REMOVED ZIP"
+        
+def extzip(fname):
         print "EXTRACTING SUBTITLE"
+        print os.path.dirname(fname)
         try:        
                 with zipfile.ZipFile(fname,'r') as subzip:
-                        subzip.extractall(location)
+                        subzip.extractall(os.path.dirname(fname))
         except:
                 os.remove(fname)
                 print "ERROR"
@@ -22,13 +29,10 @@ def dlzip(fname,req):
         except IOError:
                 print "COULD NOT WRITE ZIP"
                 print "EXITING"
+                os.system("pause")
                 sys.exit()
         print "DOWNLOADED ZIP TO : ",fname
 
-def remzip(fname):
-        print "REMOVING ZIP"
-        os.remove(fname)
-        print "REMOVED ZIP"
 
 def rename(srtname,location,name):
         rchoice = raw_input("Want to Rename Subtitle? (Y\N) : ")
@@ -40,10 +44,12 @@ def rename(srtname,location,name):
                 os.rename(srtname,renloc)
                 print "FILE RENAMED"
                 print "THANKS FOR USING THIS SCRIPT"
+                os.system("pause")
                 sys.exit()
         elif rchoice == 'n' or rchoice == 'N':
                 print "THANKS FOR USING THIS SCRIPT"
                 print "EXITING"
+                os.system("pause")
                 sys.exit()
 
 def findSub(query):
@@ -78,6 +84,7 @@ def findSub(query):
         except AssertionError:
                 print "\nSORRY SUB NOT FOUND"
                 print "EXITING"
+                os.system("pause")
                 sys.exit()
 
         req = requests.get(link)
@@ -90,6 +97,7 @@ def findSub(query):
         while(choice != 'y'):
                 if(choice == 'n' or choice == 'N'):
                         print "EXITING"
+                        os.system("pause")
                         sys.exit()
                 choice = raw_input("Proceed? (Y/N) : ")
                 
@@ -98,13 +106,11 @@ def findSub(query):
 
         req = requests.get(dlink)
 
-        location = raw_input("Save Subtitle To (folder) : ")
-        if(location[len(location)-1] != '\\'):
-                location += '\\'
+        location = os.path.abspath(raw_input("Save Subtitle To (folder) : "))+'\\'
         fname = location+'sub.zip'
         srtname = location+subname+".srt"
         dlzip(fname,req)
-        extzip(fname,location)
+        extzip(fname)
         remzip(fname)
         rename(srtname,location,name)
 		
@@ -115,6 +121,7 @@ def credits():
         print "  facebook.com/arush15june"
         print "-----------------------------"
         print
+        os.system("pause")
         sys.exit()
         
 #############################################
