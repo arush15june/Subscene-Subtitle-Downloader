@@ -87,6 +87,7 @@ def findSub(query,location,name):
         rename(srtname,location,name)
 
 def FolderSearch(currloc):
+	currloc = os.path.abspath(currloc)
 	query = "http://subscene.com/subtitles/release?q="
 	formats = ['mkv','mp4']
 	form = ''
@@ -114,7 +115,7 @@ if __name__ == "__main__":
 	print
 
 
-	currloc = os.path.abspath(os.getcwd())+"\\"
+	currloc = os.path.abspath(raw_input("Enter Folder Path : "))+"\\"
 	FolderSearch(currloc)
 
                 

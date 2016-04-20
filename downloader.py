@@ -2,25 +2,25 @@ import os,sys,zipfile
 import requests
 from bs4 import BeautifulSoup
 
+site = "http://subscene.com"
+
 
 def remzip(fname):
-        print "REMOVING ZIP"
+	try:
         os.remove(fname)
-        print "REMOVED ZIP"
-        
+    except IOError:
+    	print "Couldn't delete ZIP file"
+
+
 def extzip(fname):
-        print "EXTRACTING SUBTITLE"
         print os.path.dirname(fname)
         try:        
                 with zipfile.ZipFile(fname,'r') as subzip:
                         subzip.extractall(os.path.dirname(fname))
         except:
                 os.remove(fname)
-                print "ERROR"
-                print "EXITING"
+                print "Could not extract ZIP file"
                 sys.exit()
-        print "EXTRACTED SUBTITLE"
-
 def dlzip(fname,req):
         print "DOWNLOADING ZIP"
         try:
@@ -36,7 +36,7 @@ def dlzip(fname,req):
 
 def rename(srtname,location,name):
         rchoice = raw_input("Want to Rename Subtitle? (Y\N) : ")
-        if rchoice == 'y' or rchoice == 'Y':
+        if rchoice in 'yY':
                 rename = raw_input('Rename to (-s for same as search) : ')
                 if rename == '-s':
                         rename = name
@@ -46,9 +46,8 @@ def rename(srtname,location,name):
                 print "THANKS FOR USING THIS SCRIPT"
                 os.system("pause")
                 sys.exit()
-        elif rchoice == 'n' or rchoice == 'N':
+        elif rchoice in 'nN':
                 print "THANKS FOR USING THIS SCRIPT"
-                print "EXITING"
                 os.system("pause")
                 sys.exit()
 
@@ -63,6 +62,9 @@ def findSub(query):
         hrefs = []
         nsub = 0
         snames = []
+
+       	#SUB LIST EXTRACTION
+
         for sub in subs:
                 tdata = sub.find_all('td')
                 if "English" in tdata[0].get_text():
@@ -73,6 +75,13 @@ def findSub(query):
                                 break
                         print nsub,". ",sname
                         hrefs.append(tdata[0].find('a')['href'])
+
+        try:
+                assert(len(hrefs)!= 0)
+        except AssertionError:
+                print "SORRY SUB COULD NOT BE FOUND"
+                print "EXITING"
+                sys.exit(1)
                         
         schoice = int(raw_input("Select Sub : ")) - 1
         href = hrefs[schoice]	
@@ -83,9 +92,7 @@ def findSub(query):
                 assert(link != site)
         except AssertionError:
                 print "\nSORRY SUB NOT FOUND"
-                print "EXITING"
-                os.system("pause")
-                sys.exit()
+                restart()
 
         req = requests.get(link)
         source = BeautifulSoup(req.text,"html.parser")
@@ -106,14 +113,27 @@ def findSub(query):
 
         req = requests.get(dlink)
 
-        location = os.path.abspath(raw_input("Save Subtitle To (folder) : "))+'\\'
+        location = os.path.abspath(raw_input("Save Subtitle To (folder) -s for current folder : "))+'\\'
+        if location == '-s':
+                location = os.path.abspath(os.getcwd())+"\\"
         fname = location+'sub.zip'
         srtname = location+subname+".srt"
         dlzip(fname,req)
         extzip(fname)
         remzip(fname)
         rename(srtname,location,name)
-		
+
+def SearchQuery(name):
+	query = "http://subscene.com/subtitles/release?q="
+	cname = name.replace(" ","%20")
+	query += cname + "&r=true"
+	return query	
+
+def restart():
+	os.system('pause')
+	os.system('cls')
+	os.system('"'+__file__+'"')
+
 def credits():
         print
         print "----------------------------"
@@ -122,28 +142,30 @@ def credits():
         print "-----------------------------"
         print
         os.system("pause")
-        sys.exit()
-        
-#############################################
-        
-print "-------------------------------"
-print "| SUBSCENE SUBTITLE DOWNLOADER |"
-print "-------------------------------"
-print " type -c in search for credits"
-print
-
-site = "http://subscene.com"
-
-query = "http://subscene.com/subtitles/release?q="
-name = raw_input("Search (Be Specific) : ")
-cname = name.replace(" ","%20")
-query += cname + "&r=true"
-
-if(name == '-c'):
-        credits()
-findSub(query)
+        print
 
 
+if __name__ == "__main__":        
+	os.system('cls')
+	print "-------------------------------"
+	print "| SUBSCENE SUBTITLE DOWNLOADER |"
+	print "-------------------------------"
+	print " type -c in search for credits"
+	print 
+	
+	name = raw_input("Search (Be Specific) : ")
+	if(name == "-c"):
+		credits()
+		restart()
+	else:
+		try:
+			findSub(SearchQuery(query))
+		except:
+			print
+			print "// Something Went Wrong //"
+			print
+			restart()
+			
                 
 
 
